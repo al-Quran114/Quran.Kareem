@@ -1,5 +1,4 @@
-# إنشاء نسخة من كود HTML مع تضمين وسم Favicon
-html_content = """
+
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -294,14 +293,6 @@ html_content = """
   </script>
 </body>
 </html>
-
-# حفظ الملف
-html_path = "/mnt/data/quran_with_favicon.html"
-with open(html_path, "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-html_path
-"""
 
 #📖 موقع القرآن الكريم
 
