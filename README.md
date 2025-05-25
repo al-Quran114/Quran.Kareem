@@ -330,7 +330,9 @@
     font-weight: bold;
     font-family: sans-serif;
   ">
-    💖 ادعمنا عبر [PayPal](https://paypal.me/ahmed605352)
+    💖 ادعمنا عبر [PayPal](https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=en_US)
   </a>
+</div>
+
 </div>
 
