@@ -1,8 +1,10 @@
-
+# إنشاء نسخة من كود HTML مع تضمين وسم Favicon
+html_content = """
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <title>القرآن الكريم</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
 
@@ -292,6 +294,13 @@
   </script>
 </body>
 </html>
+
+# حفظ الملف
+html_path = "/mnt/data/quran_with_favicon.html"
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+html_path
 """
 
 #📖 موقع القرآن الكريم
