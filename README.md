@@ -319,3 +319,18 @@
 1. افتح `index.html` في متصفحك مباشرة.
 2. تأكد من الاتصال بالإنترنت لأن الموقع يعتمد على [API alquran.cloud](https://alquran.cloud/).
 3. لا حاجة لأي إعدادات خادم — يعمل محليًا.
+<div style="margin-top: 30px;">
+  <a href="https://ko-fi.com/quran_kareem" target="_blank" style="
+    display: inline-block;
+    background-color: #29abe0;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: sans-serif;
+  ">
+    ☕ ادعمنا عبر [Ko-fi](https://ko-fi.com/quran_kareem
+)
+  </a>
+</div>
