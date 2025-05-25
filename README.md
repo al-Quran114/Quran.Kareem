@@ -318,9 +318,9 @@
 
 1. افتح `index.html` في متصفحك مباشرة.
 2. تأكد من الاتصال بالإنترنت لأن الموقع يعتمد على [API alquran.cloud](https://alquran.cloud/).
-3. لا حاجة لأي إعدادات خادم — يعمل محليًا.
-<div style="margin-top: 30px;">
-  <a href="https://paypal.me/ahmed605352" target="_blank" style="
+3. لا حاجة لأي إعدادات خادم — يعمل محليًا.<div style="margin-top: 30px;">
+
+  <a href="https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=ar_EG" target="_blank" style="
     display: inline-block;
     background-color: #0070ba;
     color: white;
@@ -330,9 +330,8 @@
     font-weight: bold;
     font-family: sans-serif;
   ">
-    💖 ادعمنا عبر [PayPal](https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=en_US)
+    💖 ادعمنا عبر [PayPal](https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=ar_EG)
   </a>
 </div>
 
-</div>
 
