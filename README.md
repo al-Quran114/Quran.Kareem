@@ -320,9 +320,9 @@
 2. تأكد من الاتصال بالإنترنت لأن الموقع يعتمد على [API alquran.cloud](https://alquran.cloud/).
 3. لا حاجة لأي إعدادات خادم — يعمل محليًا.
 <div style="margin-top: 30px;">
-  <a href="https://ko-fi.com/quran_kareem" target="_blank" style="
+  <a href="رابط_التبرع" target="_blank" style="
     display: inline-block;
-    background-color: #29abe0;
+    background-color: #0070ba;
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
@@ -330,7 +330,8 @@
     font-weight: bold;
     font-family: sans-serif;
   ">
-    ☕ ادعمنا عبر [Ko-fi](https://ko-fi.com/quran_kareem
-)
+    💖 ادعمنا عبر paypal.me/ahmed605352
+
   </a>
 </div>
+
