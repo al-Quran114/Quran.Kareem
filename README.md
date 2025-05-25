@@ -330,7 +330,7 @@
     font-weight: bold;
     font-family: sans-serif;
   ">
-    💖 ادعمنا عبر paypal.me/ahmed605352
+    💖 ادعمنا عبر https://paypal.me/ahmed605352
 
   </a>
 </div>
