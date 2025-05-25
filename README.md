@@ -320,7 +320,7 @@
 2. تأكد من الاتصال بالإنترنت لأن الموقع يعتمد على [API alquran.cloud](https://alquran.cloud/).
 3. لا حاجة لأي إعدادات خادم — يعمل محليًا.
 <div style="margin-top: 30px;">
-  <a href="رابط_التبرع" target="_blank" style="
+  <a href="https://paypal.me/ahmed605352" target="_blank" style="
     display: inline-block;
     background-color: #0070ba;
     color: white;
@@ -330,8 +330,7 @@
     font-weight: bold;
     font-family: sans-serif;
   ">
-    💖 ادعمنا عبر https://paypal.me/ahmed605352
-
+    💖 ادعمنا عبر [PayPal](https://paypal.me/ahmed605352)
   </a>
 </div>
 
