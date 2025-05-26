@@ -322,7 +322,7 @@
 
 1. افتح `index.html` في متصفحك مباشرة.
 2. تأكد من الاتصال بالإنترنت لأن الموقع يعتمد على [API alquran.cloud](https://alquran.cloud/).
-3. لا حاجة لأي إعدادات خادم — يعمل محليًا.<div style="margin-top: 30px;">
+3. لا حاجة لأي إعدادات خادم — يعمل محليًا.
 
   <a href="https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=ar_EG" target="_blank" style="
     display: inline-block;
