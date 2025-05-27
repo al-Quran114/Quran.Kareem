@@ -265,7 +265,7 @@
     function loadFavorites() {
       const favs = JSON.parse(localStorage.getItem('favorites')) || [];
       const favList = document.getElementById('favList');
-      favList.innerHTML = '<h3>الآيات المفضلة</h3>';
+      favList.innerHTML = '<h3>💖الآيات المفضلة💖</h3>';
       if (favs.length === 0) {
         favList.innerHTML += '<p>لا توجد آيات مفضلة حتى الآن.</p>';
         return;
