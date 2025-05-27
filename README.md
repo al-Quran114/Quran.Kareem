@@ -334,5 +334,3 @@
   ">
     💖 ادعمنا عبر [PayPal](https://paypal.me/sheikhmohamedhussein?country.x=EG&locale.x=ar_EG)
     
-  </a>
-</div>
