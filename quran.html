@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>القرآن الكريم</title>
-  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <meta
     name="description"
     content="موقع القرآن الكريم: اقرأ واستمع لآيات الله بصوت العفاسي، مع تفسيرات الجلالين والسعدي، وترجمات إنجليزية موثوقة. بحث سريع، وضع ليلي، ومفضلة لحفظ الآيات.">
