@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>القرآن الكريم</title>
-  <meta
-    name="description"
-    content="موقع القرآن الكريم: اقرأ واستمع لآيات الله بصوت العفاسي، مع تفسيرات الجلالين والسعدي، وترجمات إنجليزية موثوقة. بحث سريع، وضع ليلي، ومفضلة لحفظ الآيات.">
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
 
