@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://al-quran114.github.io/Quran.Kareem/</loc>
+    <loc>https://al-quran114.github.io/Quran.Kareem/quran.html</loc>
+    <lastmod>2025-06-04</lastmod>
   </url>
-  <!-- روابط السور من 1 إلى 114 -->
+</urlset>
   <url><loc>https://al-quran114.github.io/Quran.Kareem/surah/1</loc></url>
   <url><loc>https://al-quran114.github.io/Quran.Kareem/surah/2</loc></url>
   <url><loc>https://al-quran114.github.io/Quran.Kareem/surah/3</loc></url>
