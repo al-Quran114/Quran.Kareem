@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <title>القرآن الكريم</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
+  <meta
+    name="description"
+    content="Quran Kareem - القرآن الكريم: استمع و اقرأ القرآن الكريم كاملًا بتلاوات خاشعة، مع التفسير والترجمة، والبحث في الآيات بسهولة. واجهة بسيطة وسهلة الاستخدام." />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
 
