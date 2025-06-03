@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://al-quran114.github.io/Quran.Kareem/sitemap.xml
