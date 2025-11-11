@@ -465,18 +465,18 @@ overlayEl.addEventListener('click', ()=> {
   sidebar.classList.remove('open');
   overlayEl.classList.remove('show');
 });
-
+  
 /* ---------- Theme handling ---------- */
 (function initTheme() {
   const toggleThemeBtn = document.getElementById('toggleTheme');
   const root = document.documentElement;
   const stored = localStorage.getItem('q_theme_v3');
 
-  // الوضع الافتراضي: نهاري
-  if (stored === 'dark') {
-    root.classList.remove('light');
-  } else {
+  // الوضع الافتراضي: ليلي
+  if (stored === 'light') {
     root.classList.add('light');
+  } else {
+    root.classList.remove('light');
   }
 
   // التبديل عند الضغط
