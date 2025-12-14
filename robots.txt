@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://quran-kareem-ccg.pages.dev/sitemap.xml
