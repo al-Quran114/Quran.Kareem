@@ -524,27 +524,20 @@ function populateTranslationsAndTafsirs(){
 /* ---------- Load full Quran (uthmani) ---------- */
 async function loadQuran(){
   try{
-    const res = await fetch('https://api.alquran.cloud/v1/quran/quran-uthmani');
-    const json = await res.json();
-    if (json?.data?.surahs){
-      quran = json.data.surahs;
-      renderChapters();
-      // if last read exists open it
-      const last = JSON.parse(localStorage.getItem('q_last_v3')||'null');
-      if (last && last.surah) openSurah(last.surah);
-      return;
+    const res = await fetch('source/surah.json');
+    quran = await res.json();
+
+    renderChapters();
+
+    const last = JSON.parse(localStorage.getItem('q_last_v3') || 'null');
+    if (last && last.surah) {
+      openSurah(last.surah);
     }
   }catch(e){
-    console.warn('alquran.cloud failed',e);
+    console.error('فشل تحميل surah.json', e);
+    alert('تعذر تحميل بيانات القرآن من الملفات المحلية');
   }
-  // fallback minimal
-  quran = [
-    {number:1,name:'الفاتحة',englishName:'Al-Faatiha',ayahs:[{numberInSurah:1,text:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',number:1}]},
-    {number:2,name:'البقرة',englishName:'Al-Baqara',ayahs:[]}
-  ];
-  renderChapters();
 }
-
 /* ---------- Render chapters list ---------- */
 function renderChapters(filter=''){
   chaptersList.innerHTML = '';
@@ -562,18 +555,27 @@ function renderChapters(filter=''){
 }
 
 /* ---------- Open surah and render verses ---------- */
-function openSurah(number){
-  const s = quran.find(x=>x.number==number);
-  if(!s) return;
-  currentSurah = s;
-  surahTitle.textContent = `${s.number} — ${s.name}`;
-  surahMeta.textContent = `${s.englishName || ''} • ${s.ayahs?.length || 0} آية`;
-  renderVerses(s);
-  populateReciterPlayer(s);
-  // save last read
-  localStorage.setItem('q_last_v3', JSON.stringify({surah:s.number, at: Date.now()}));
-}
+async function openSurah(number){
+  try{
+    const res = await fetch(`source/surah/surah_${number}.json`);
+    const s = await res.json();
 
+    currentSurah = s;
+    surahTitle.textContent = `${s.number} — ${s.name}`;
+    surahMeta.textContent = `${s.englishName || ''} • ${s.ayahs.length} آية`;
+
+    renderVerses(s);
+    populateReciterPlayer(s);
+
+    localStorage.setItem(
+      'q_last_v3',
+      JSON.stringify({ surah: s.number, at: Date.now() })
+    );
+  }catch(e){
+    console.error('فشل تحميل السورة', e);
+    alert('تعذر تحميل السورة من الملفات المحلية');
+  }
+}
 /* ---------- Render verses list ---------- */
 function renderVerses(surah){
   versesWrap.innerHTML = '';
