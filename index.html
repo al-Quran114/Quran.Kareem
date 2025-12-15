@@ -451,67 +451,64 @@ async function loadQuran(){
     const res = await fetch(`${BASE_PATH}source/surah.json`);
     quran = await res.json();
     renderChapters();
-
-    const last = JSON.parse(localStorage.getItem('q_last_v3')||'null');
-    if(last?.surah) openSurah(last.surah);
   }catch(e){
     console.error(e);
-    alert('فشل تحميل السور');
+    alert('فشل تحميل surah.json');
   }
 }
-
 /* ---------- Render chapters ---------- */
 function renderChapters(filter=''){
-  chaptersList.innerHTML='';
+  chaptersList.innerHTML = '';
   const q = normalizeArabic(filter);
+
   quran.forEach(s=>{
-    if(q && !normalizeArabic(s.name).includes(q) && String(s.number)!==q) return;
-    const d=document.createElement('div');
-    d.className='chapter-item';
-    d.innerHTML=`
+    if(q && !normalizeArabic(s.titleAr).includes(q) && s.index !== q) return;
+
+    const el = document.createElement('div');
+    el.className = 'chapter-item';
+    el.innerHTML = `
       <div>
-        <strong>${s.number}. ${s.name}</strong>
-        <div class="chapter-meta">${s.ayahs} آية</div>
+        <strong>${parseInt(s.index)}. ${s.titleAr}</strong>
+        <div class="chapter-meta">
+          ${s.count} آية • ${s.type}
+        </div>
       </div>
-      <div>▶</div>`;
-    d.onclick=()=>openSurah(s.number);
-    chaptersList.appendChild(d);
+      <div>▶</div>
+    `;
+
+    el.onclick = () => openSurah(s.index);
+    chaptersList.appendChild(el);
   });
 }
 
 /* ---------- Open surah ---------- */
-async function openSurah(number){
+async function openSurah(index){
   try{
-    const res = await fetch(`${BASE_PATH}source/surah/surah_${number}.json`);
+    const res = await fetch(`${BASE_PATH}source/surah/surah_${index}.json`);
     const s = await res.json();
     currentSurah = s;
 
-    surahTitle.textContent = `${s.number} — ${s.name}`;
-    surahMeta.textContent = `${s.ayahs.length} آية`;
+    surahTitle.textContent = `${parseInt(index)} — ${s.titleAr}`;
+    surahMeta.textContent  = `${s.count} آية • ${s.type}`;
 
     renderVerses(s);
-    populateReciterPlayer(s);
+    localStorage.setItem('q_last_v3', JSON.stringify({ surah:index }));
 
-    localStorage.setItem('q_last_v3', JSON.stringify({
-      surah: s.number,
-      at: Date.now()
-    }));
   }catch(e){
     console.error(e);
-    alert('فشل تحميل السورة');
+    alert('تعذر تحميل السورة');
   }
 }
-
 /* ---------- Render verses ---------- */
-function renderVerses(s){
-  versesWrap.innerHTML='';
-  s.ayahs.forEach(a=>{
-    const el=document.createElement('div');
-    el.className='verse';
-    el.dataset.verse=a.numberInSurah;
-    el.innerHTML=`
-      <div class="arab">${a.text}</div>
-      <small>﴿${a.numberInSurah}﴾</small>`;
+function renderVerses(surah){
+  versesWrap.innerHTML = '';
+  (surah.verses || surah.ayahs || []).forEach((v,i)=>{
+    const el = document.createElement('div');
+    el.className = 'verse';
+    el.innerHTML = `
+      <div class="arab">${v.text}</div>
+      <small>﴿${i+1}﴾</small>
+    `;
     versesWrap.appendChild(el);
   });
 }
