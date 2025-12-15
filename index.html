@@ -484,17 +484,18 @@ function renderChapters(filter=''){
 /* ---------- Open surah ---------- */
 async function openSurah(index){
   try{
-    const res = await fetch(`${BASE_PATH}source/surah/surah_${index}.json`);
+    const cleanIndex = Number(index);
+
+    const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
     const s = await res.json();
 
-    // البحث في بيانات السور الرئيسية
-    const meta = quran.find(q => Number(q.index) === Number(index));
+    const meta = quran.find(q => Number(q.index) === cleanIndex);
 
-    surahTitle.textContent = `${parseInt(index)} — ${meta?.titleAr || s.name}`;
+    surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
     surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
     renderVerses(s);
-    localStorage.setItem('q_last_v3', JSON.stringify({ surah:index }));
+    localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
 
   }catch(e){
     console.error(e);
