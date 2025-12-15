@@ -489,6 +489,8 @@ async function openSurah(index){
     const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
     const s = await res.json();
 
+    s.index = cleanIndex;
+
     const meta = quran.find(q => Number(q.index) === cleanIndex);
 
     surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
