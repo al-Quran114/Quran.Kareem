@@ -487,7 +487,8 @@ async function openSurah(index){
     const res = await fetch(`${BASE_PATH}source/surah/surah_${index}.json`);
     const s = await res.json();
 
-    const meta = quran.find(q => q.index === index);
+    // البحث في بيانات السور الرئيسية
+    const meta = quran.find(q => Number(q.index) === Number(index));
 
     surahTitle.textContent = `${parseInt(index)} — ${meta?.titleAr || s.name}`;
     surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
@@ -497,7 +498,7 @@ async function openSurah(index){
 
   }catch(e){
     console.error(e);
-    alert('تعذر تحميل السورة');
+    alert(`تعذر تحميل السورة رقم ${index}`);
   }
 }
 
@@ -528,7 +529,7 @@ function renderVerses(surah){
     versesWrap.appendChild(el);
   });
 }
-  
+
 /* ---------- Audio ---------- */
 function populateReciterPlayer(surah){
   playerWrap.innerHTML=`
