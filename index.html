@@ -520,29 +520,23 @@ function populateTranslationsAndTafsirs(){
   tafsirSelect.innerHTML = '<option value="">بدون تفسير</option>';
   tafsirs.forEach(t=> tafsirSelect.appendChild(Object.assign(document.createElement('option'),{value:t.code,textContent:t.name})));
 }
-
-/* ---------- Load full Quran (uthmani) ---------- */
+/* ---------- Load Quran from local files ---------- */
 async function loadQuran(){
   try{
-    const res = await fetch('https://api.alquran.cloud/v1/quran/quran-uthmani');
-    const json = await res.json();
-    if (json?.data?.surahs){
-      quran = json.data.surahs;
-      renderChapters();
-      // if last read exists open it
-      const last = JSON.parse(localStorage.getItem('q_last_v3')||'null');
-      if (last && last.surah) openSurah(last.surah);
-      return;
+    const res = await fetch('source/surah.json');
+    quran = await res.json();
+
+    renderChapters();
+
+    const last = JSON.parse(localStorage.getItem('q_last_v3') || 'null');
+    if (last && last.surah) {
+      openSurah(last.surah);
     }
+
   }catch(e){
-    console.warn('alquran.cloud failed',e);
+    console.error('فشل تحميل surah.json', e);
+    alert('تعذر تحميل بيانات السور من الملفات المحلية');
   }
-  // fallback minimal
-  quran = [
-    {number:1,name:'الفاتحة',englishName:'Al-Faatiha',ayahs:[{numberInSurah:1,text:'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',number:1}]},
-    {number:2,name:'البقرة',englishName:'Al-Baqara',ayahs:[]}
-  ];
-  renderChapters();
 }
 
 /* ---------- Render chapters list ---------- */
@@ -561,17 +555,29 @@ function renderChapters(filter=''){
   });
 }
 
-/* ---------- Open surah and render verses ---------- */
-function openSurah(number){
-  const s = quran.find(x=>x.number==number);
-  if(!s) return;
-  currentSurah = s;
-  surahTitle.textContent = `${s.number} — ${s.name}`;
-  surahMeta.textContent = `${s.englishName || ''} • ${s.ayahs?.length || 0} آية`;
-  renderVerses(s);
-  populateReciterPlayer(s);
-  // save last read
-  localStorage.setItem('q_last_v3', JSON.stringify({surah:s.number, at: Date.now()}));
+/* ---------- Open surah from local file ---------- */
+async function openSurah(number){
+  try{
+    const res = await fetch(`source/surah/surah_${number}.json`);
+    const s = await res.json();
+
+    currentSurah = s;
+
+    surahTitle.textContent = `${s.number} — ${s.name}`;
+    surahMeta.textContent = `${s.englishName || ''} • ${s.ayahs.length} آية`;
+
+    renderVerses(s);
+    populateReciterPlayer(s);
+
+    localStorage.setItem('q_last_v3', JSON.stringify({
+      surah: s.number,
+      at: Date.now()
+    }));
+
+  }catch(e){
+    console.error('فشل تحميل السورة', e);
+    alert('تعذر تحميل السورة من الملفات المحلية');
+  }
 }
 
 /* ---------- Render verses list ---------- */
@@ -720,13 +726,44 @@ function performGlobalSearch(query){
   });
 }
 
-/* ---------- scroll to last read (final version: no pause) ---------- */
-scrollToLastBtn.addEventListener('click', () => {
+/* ---------- scroll to last read (LOCAL FILES) ---------- */
+scrollToLastBtn.addEventListener('click', async () => {
   const last = JSON.parse(localStorage.getItem('q_last_v3') || 'null');
   if (!last || !last.surah) {
     alert('لا توجد قراءة سابقة محفوظة');
     return;
   }
+
+  // إذا كانت السورة الحالية نفسها
+  if (currentSurah && currentSurah.number === last.surah) {
+    const el = [...document.querySelectorAll('.verse')]
+      .find(v => v.dataset.verse == last.verse);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  try{
+    const res = await fetch(`source/surah/surah_${last.surah}.json`);
+    const s = await res.json();
+
+    currentSurah = s;
+    surahTitle.textContent = `${s.number} — ${s.name}`;
+    surahMeta.textContent = `${s.englishName || ''} • ${s.ayahs.length} آية`;
+
+    renderVerses(s);
+
+    setTimeout(() => {
+      const el = [...document.querySelectorAll('.verse')]
+        .find(v => v.dataset.verse == last.verse);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 500);
+
+  }catch(err){
+    console.error('خطأ في تحميل السورة', err);
+    alert('تعذر تحميل آخر قراءة');
+  }
+});
+
 
   // 🔹 احفظ القارئ الحالي
   const currentReciter = reciterSelect.value;
