@@ -668,5 +668,76 @@ document.getElementById('scrollTopBtn').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 </script>
+<script>
+/* =========================
+   FIX MOBILE CONTROLS
+   ========================= */
+
+/* ---------- Sidebar mobile toggle ---------- */
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const overlay = document.getElementById('overlay');
+
+if (mobileMenuBtn && sidebar) {
+  mobileMenuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+}
+
+overlay?.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+});
+
+/* ---------- Theme toggle (light / dark) ---------- */
+const themeBtn = document.getElementById('toggleTheme');
+
+if (themeBtn) {
+  themeBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('light');
+    localStorage.setItem(
+      'q_theme',
+      document.documentElement.classList.contains('light') ? 'light' : 'dark'
+    );
+  });
+}
+
+/* restore theme */
+if (localStorage.getItem('q_theme') === 'light') {
+  document.documentElement.classList.add('light');
+}
+
+/* ---------- Play surah button ---------- */
+playSurahBtn?.addEventListener('click', () => {
+  if (!currentSurah) return alert('اختر سورة أولاً');
+  populateReciterPlayer(currentSurah);
+});
+
+/* ---------- Update currentSurah on open ---------- */
+const _openSurah = openSurah;
+openSurah = async function(index){
+  await _openSurah(index);
+  currentSurah = { index: Number(index) };
+};
+
+/* ---------- Search inside verses ---------- */
+function searchInVerses(query){
+  const q = normalizeArabic(query);
+  const verses = document.querySelectorAll('.verse');
+
+  verses.forEach(v => {
+    const text = normalizeArabic(v.innerText);
+    v.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+/* mobile + top search = verses search if surah opened */
+[topSearch, document.getElementById('mobileSearch')].forEach(input=>{
+  if(!input) return;
+  input.addEventListener('input', e=>{
+    if(currentSurah) searchInVerses(e.target.value);
+  });
+});
+</script>  
 </body>
 </html>
