@@ -486,10 +486,11 @@ async function openSurah(index){
   try{
     const res = await fetch(`${BASE_PATH}source/surah/surah_${index}.json`);
     const s = await res.json();
-    currentSurah = s;
 
-    surahTitle.textContent = `${parseInt(index)} — ${s.titleAr}`;
-    surahMeta.textContent  = `${s.count} آية • ${s.type}`;
+    const meta = quran.find(q => q.index === index);
+
+    surahTitle.textContent = `${parseInt(index)} — ${meta?.titleAr || s.name}`;
+    surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
     renderVerses(s);
     localStorage.setItem('q_last_v3', JSON.stringify({ surah:index }));
@@ -499,6 +500,7 @@ async function openSurah(index){
     alert('تعذر تحميل السورة');
   }
 }
+
 /* ---------- Render verses ---------- */
 function renderVerses(surah){
   versesWrap.innerHTML = '';
