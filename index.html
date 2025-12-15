@@ -508,6 +508,7 @@ async function openSurah(index){
 /* ---------- Render verses ---------- */
 function renderVerses(surah){
   versesWrap.innerHTML = '';
+const isFatiha = Number(surah.index) === 1;
 
   if(!surah.verse){
     versesWrap.innerHTML = '<p>لا توجد آيات</p>';
@@ -523,11 +524,12 @@ function renderVerses(surah){
     .map(k => surah.verse[k]);
 
   versesArray.forEach((text, i)=>{
+    const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
     const el = document.createElement('div');
     el.className = 'verse';
     el.innerHTML = `
       <div class="arab">${text}</div>
-      <span class="verse-number">﴿${i+1}﴾</span>
+      <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
     `;
     versesWrap.appendChild(el);
   });
