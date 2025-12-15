@@ -502,17 +502,31 @@ async function openSurah(index){
 /* ---------- Render verses ---------- */
 function renderVerses(surah){
   versesWrap.innerHTML = '';
-  (surah.verses || surah.ayahs || []).forEach((v,i)=>{
+
+  if(!surah.verse){
+    versesWrap.innerHTML = '<p>لا توجد آيات</p>';
+    return;
+  }
+
+  const versesArray = Object.keys(surah.verse)
+    .sort((a,b)=> {
+      const na = parseInt(a.replace('verse_',''));
+      const nb = parseInt(b.replace('verse_',''));
+      return na - nb;
+    })
+    .map(k => surah.verse[k]);
+
+  versesArray.forEach((text, i)=>{
     const el = document.createElement('div');
     el.className = 'verse';
     el.innerHTML = `
-      <div class="arab">${v.text}</div>
-      <small>﴿${i+1}﴾</small>
+      <div class="arab">${text}</div>
+      <span class="verse-number">﴿${i+1}﴾</span>
     `;
     versesWrap.appendChild(el);
   });
 }
-
+  
 /* ---------- Audio ---------- */
 function populateReciterPlayer(surah){
   playerWrap.innerHTML=`
