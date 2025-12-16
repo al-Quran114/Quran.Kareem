@@ -506,7 +506,6 @@ function renderChapters(filter=''){
 }
 /* ---------- Open surah ---------- */
 async function openSurah(index) {
-  let showTafsir = false;
   try {
     const cleanIndex = parseInt(index, 10);
 
@@ -544,14 +543,6 @@ function renderVerses(surah, translationData, tafsirData) {
     versesWrap.innerHTML = '<p>لا توجد آيات</p>';
     return;
   }
-tafsirSelect.addEventListener('change', () => {
-  showTafsir = tafsirSelect.value === 'muyassar';
-
-  const last = JSON.parse(localStorage.getItem('q_last_v3') || 'null');
-  if (last?.surah) {
-    openSurah(last.surah);
-  }
-});
 
   const versesArray = Object.keys(surah.verse)
     .sort((a, b) => {
@@ -578,14 +569,6 @@ tafsirSelect.addEventListener('change', () => {
     if (!isFatiha && i === 0) {
       tafsir = '';
     }
-if (!showTafsir) {
-  tafsir = '';
-}
-    if (tafsir && showTafsir) {
-  el.addEventListener('click', () => {
-    el.querySelector('.tafsir')?.classList.toggle('show');
-  });
-}
 
     const el = document.createElement('div');
     el.className = 'verse';
