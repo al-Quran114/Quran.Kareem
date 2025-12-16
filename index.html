@@ -370,6 +370,7 @@ html .verse .tafsir {
             </select>
             <select id="tafsirSelect" title="التفسير">
               <option value="">بدون تفسير</option>
+              <option value="muyassar">بتفسير</option>
             </select>
             <button id="playSurahBtn" class="btn">▶ تشغيل السورة</button>
             <button id="scrollToLast" class="btn alt">🔍 آخر قراءة</button>
@@ -507,26 +508,29 @@ function renderChapters(filter=''){
 /* ---------- Open surah ---------- */
 async function openSurah(index) {
   try {
-    const cleanIndex = parseInt(index, 10);
+    const cleanIndex = Number(index);
 
+    // تحميل ملف السورة (1,2,3... بدون أصفار)
     const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
-    const s = await res.json();
+    if (!res.ok) throw new Error('Surah file not found');
 
-    s.index = cleanIndex;
+    const surah = await res.json();
+    surah.index = cleanIndex;
 
-    const tafsirData = await fetch(`${BASE_PATH}source/ar_muyassar.json`)
-      .then(r => r.json());
+    // تحميل تفسير الميسر (مرة واحدة لكل فتح سورة)
+    const tafsirRes = await fetch(`${BASE_PATH}source/ar_muyassar.json`);
+    const tafsirData = await tafsirRes.json();
 
-    const translationData = { translations: [] };
-
+    // بيانات السورة العامة
     const meta = quran.find(q => Number(q.index) === cleanIndex);
 
-    surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
-    surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
+    surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || surah.name}`;
+    surahMeta.textContent  = `${meta?.count || surah.count} آية • ${meta?.type || ''}`;
 
-    renderVerses(s, translationData, tafsirData);
+    renderVerses(surah, tafsirData);
 
     localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
+
   } catch (e) {
     console.error(e);
     alert(`تعذر تحميل السورة رقم ${index}`);
@@ -534,40 +538,41 @@ async function openSurah(index) {
 }
 
 /* ---------- Render verses ---------- */
-function renderVerses(surah, translationData, tafsirData) {
+function renderVerses(surah, tafsirData) {
   versesWrap.innerHTML = '';
-
-  const isFatiha = Number(surah.index) === 1;
 
   if (!surah.verse) {
     versesWrap.innerHTML = '<p>لا توجد آيات</p>';
     return;
   }
 
+  const isFatiha = Number(surah.index) === 1;
+
+  // ترتيب الآيات
   const versesArray = Object.keys(surah.verse)
     .sort((a, b) => {
       const na = parseInt(a.replace('verse_', ''));
       const nb = parseInt(b.replace('verse_', ''));
       return na - nb;
     })
-    .map(k => surah.verse[k]);
+    .map(k => ({
+      number: parseInt(k.replace('verse_', '')),
+      text: surah.verse[k]
+    }));
 
-  versesArray.forEach((text, i) => {
+  versesArray.forEach(({ number, text }) => {
 
-    const verseNumber =
-      (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
+    // ترقيم العرض
+    let displayNumber = number;
+    if (!isFatiha && number === 1) displayNumber = null;
 
-    const translation = translationData.translations?.[i]?.text || '';
-
-    const ayaNumber = isFatiha ? i + 1 : i;
-    const tafsirObj = tafsirData.find(
-      t => t.sura === Number(surah.index) && t.aya === ayaNumber
-    );
-
-    let tafsir = tafsirObj ? tafsirObj.text : '';
-
-    if (!isFatiha && i === 0) {
-      tafsir = '';
+    // جلب التفسير الصحيح
+    let tafsir = '';
+    if (isFatiha || number !== 1) {
+      const tafsirObj = tafsirData.find(
+        t => t.sura === surah.index && t.aya === number
+      );
+      tafsir = tafsirObj ? tafsirObj.text : '';
     }
 
     const el = document.createElement('div');
@@ -576,17 +581,17 @@ function renderVerses(surah, translationData, tafsirData) {
     el.innerHTML = `
       <div class="arab">${text}</div>
       <span class="verse-number">
-        ${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}
+        ${displayNumber ? `﴿${displayNumber}﴾` : ''}
       </span>
-      <div class="translation">${translation}</div>
       <div class="tafsir">${tafsir}</div>
     `;
 
-    el.addEventListener('click', () => {
-      const tafsirEl = el.querySelector('.tafsir');
-      if (!tafsirEl || !tafsir) return;
-      tafsirEl.classList.toggle('show');
-    });
+    // إظهار / إخفاء التفسير
+    if (tafsir) {
+      el.addEventListener('click', () => {
+        el.querySelector('.tafsir')?.classList.toggle('show');
+      });
+    }
 
     versesWrap.appendChild(el);
   });
