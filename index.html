@@ -288,24 +288,25 @@
   select,input{background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:10px}
   small.muted{color:var(--muted);font-size:12px}
   footer{margin-top:30px;color:var(--muted);text-align:center;font-size:13px}
-  
+
 .verse .tafsir {
   display: none;
-  color: #000; /* افتراضي للنهاري */
+  color: #000 !important;    
   background: transparent;
   padding: 5px 0;
-  transition: color 0.3s;
+  transition: color 0.3s ease;
 }
 
-/* عند فتح التفسير */
+
 .verse .tafsir.show {
   display: block;
 }
 
-/* الوضع الليلي */
+
 body.dark .verse .tafsir {
-  color: #fff;
+  color: #fff !important;
 }
+
 </style>
 </head>
 <body>
