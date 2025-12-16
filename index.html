@@ -290,27 +290,26 @@
   footer{margin-top:30px;color:var(--muted);text-align:center;font-size:13px}
 
 .verse .tafsir {
-  display: none;
-  color: #000 !important;    
-  background: transparent;
-  padding: 5px 0;
-  transition: color 0.3s ease;
+    display: none; 
+    color: #000 !important;   
+    background: transparent;
+    padding: 5px 0;
+    transition: color 0.3s ease;
 }
-
-
-.verse .tafsir.show {
-  display: block;
+.verse.show-tafsir .tafsir {
+    display: block; 
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-top: 5px;
+    border-right: 4px solid #4CAF50;
 }
-
-
 html .verse .tafsir {
-  color: #fff !important;
+    color: #fff !important;
 }
-  
-  html.light .verse .tafsir {
-  color: #000 !important;
+ 
+html.light .verse .tafsir {
+    color: #000 !important;
 }
-
 </style>
 </head>
 <body>
