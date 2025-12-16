@@ -502,9 +502,7 @@ function renderChapters(filter=''){
 /* ---------- Open surah ---------- */
 async function openSurah(index) {
   try {
-    const cleanIndex = Number(index);
-
-    // جلب السورة من الملف المحلي
+    const cleanIndex = parseInt(index, 10);
     const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
     const s = await res.json();
 
