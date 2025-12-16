@@ -482,84 +482,97 @@ function renderChapters(filter=''){
 }
 
 /* ---------- Open surah ---------- */
-async function openSurah(index){
-  try{
+async function openSurah(index) {
+  try {
     const cleanIndex = Number(index);
 
+    // جلب السورة من API
     const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
     const s = await res.json();
 
     s.index = cleanIndex;
 
+    // جلب البيانات الإضافية مثل التفسير والترجمة من API
+    const translationRes = await fetch(`https://api.quran.com/api/v4/quran/translations/131?chapter_number=${cleanIndex}`);  // ترجمة (Sahih International)
+    const tafsirRes = await fetch(`https://api.quran.com/api/v4/quran/tafsirs/169?chapter_number=${cleanIndex}`);  // تفسير (ابن كثير)
+
+    const translationData = await translationRes.json();
+    const tafsirData = await tafsirRes.json();
+
+    // جلب المعلومات عن السورة من ملف JSON المحلي
     const meta = quran.find(q => Number(q.index) === cleanIndex);
 
     surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
-    surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
+    surahMeta.textContent = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
-    renderVerses(s);
+    renderVerses(s, translationData, tafsirData);
+
     localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
-
-  }catch(e){
+  } catch (e) {
     console.error(e);
     alert(`تعذر تحميل السورة رقم ${index}`);
   }
 }
-
+  
 /* ---------- Render verses ---------- */
-function renderVerses(surah){
+function renderVerses(surah, translationData, tafsirData) {
   versesWrap.innerHTML = '';
-const isFatiha = Number(surah.index) === 1;
 
-  if(!surah.verse){
+  const isFatiha = Number(surah.index) === 1;
+
+  if (!surah.verse) {
     versesWrap.innerHTML = '<p>لا توجد آيات</p>';
     return;
   }
 
   const versesArray = Object.keys(surah.verse)
-    .sort((a,b)=> {
-      const na = parseInt(a.replace('verse_',''));
-      const nb = parseInt(b.replace('verse_',''));
+    .sort((a, b) => {
+      const na = parseInt(a.replace('verse_', ''));
+      const nb = parseInt(b.replace('verse_', ''));
       return na - nb;
     })
     .map(k => surah.verse[k]);
 
-  versesArray.forEach((text, i)=>{
+  versesArray.forEach((text, i) => {
     const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
+
+    const translation = translationData.translations[i]?.text || '';
+    const tafsir = tafsirData.tafsirs[i]?.text || '';
+
     const el = document.createElement('div');
     el.className = 'verse';
     el.innerHTML = `
       <div class="arab">${text}</div>
       <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
+      <div class="translation">${translation}</div>
+      <div class="tafsir">${tafsir}</div>
     `;
     versesWrap.appendChild(el);
   });
 }
 
 /* ---------- Audio ---------- */
-function populateReciterPlayer(surah){
-  playerWrap.innerHTML=`
+function populateReciterPlayer(surah) {
+  playerWrap.innerHTML = `
     <select id="playerReciterSelect">
-      ${Object.keys(RECITERS).map(r=>`<option>${r}</option>`).join('')}
+      ${Object.keys(RECITERS).map(r => `<option>${r}</option>`).join('')}
     </select>
     <audio id="surahAudio" controls></audio>`;
+  
   document.getElementById('playerReciterSelect')
-    .addEventListener('change',()=>initAudioForSurah(surah));
+    .addEventListener('change', () => initAudioForSurah(surah));
+  
   initAudioForSurah(surah);
 }
 
-function initAudioForSurah(surah){
-  const reciter=document.getElementById('playerReciterSelect').value;
-  const audio=document.getElementById('surahAudio');
-  const c=String(surah.number).padStart(3,'0');
-  audioUrlsTried = (RECITERS[reciter]||[]).map(p=>p.replace('{c}',c));
-  lastAudioTryIndex=0;
-  tryNextAudio();
-  audio.onerror=()=>{ if(++lastAudioTryIndex<audioUrlsTried.length) tryNextAudio(); };
-}
+function initAudioForSurah(surah) {
+  const reciter = document.getElementById('playerReciterSelect').value;
+  const audio = document.getElementById('surahAudio');
+  const c = String(surah.index).padStart(3, '0');
 
-function tryNextAudio(){
-  const audio=document.getElementById('surahAudio');
-  audio.src=audioUrlsTried[lastAudioTryIndex];
+  // استخدام الصوت من API بدلاً من ملفات محلية
+  const audioUrl = `https://api.quran.com/api/v4/chapter_recitations/7/${c}`;
+  audio.src = audioUrl;
   audio.load();
 }
 
