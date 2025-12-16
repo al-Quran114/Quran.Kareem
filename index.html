@@ -289,17 +289,22 @@
   small.muted{color:var(--muted);font-size:12px}
   footer{margin-top:30px;color:var(--muted);text-align:center;font-size:13px}
   
-  .tafsir {
+.verse .tafsir {
   display: none;
-  margin-top: 8px;
-  padding: 10px;
-  background: #f7f7f7;
-  border-right: 4px solid #0d472c;
-  font-size: 14px;
-  line-height: 1.8;
+  color: #000; /* افتراضي للنهاري */
+  background: transparent;
+  padding: 5px 0;
+  transition: color 0.3s;
 }
-.verse {
-  cursor: pointer;
+
+/* عند فتح التفسير */
+.verse .tafsir.show {
+  display: block;
+}
+
+/* الوضع الليلي */
+body.dark .verse .tafsir {
+  color: #fff;
 }
 </style>
 </head>
@@ -524,7 +529,7 @@ async function openSurah(index) {
 }
 
 /* ---------- Render verses ---------- */
-function renderVerses(surah, tafsirData) {
+function renderVerses(surah, translationData, tafsirData) {
   versesWrap.innerHTML = '';
 
   const isFatiha = Number(surah.index) === 1;
@@ -535,35 +540,47 @@ function renderVerses(surah, tafsirData) {
   }
 
   const versesArray = Object.keys(surah.verse)
-    .sort((a, b) => parseInt(a.replace('verse_', '')) - parseInt(b.replace('verse_', '')))
+    .sort((a, b) => {
+      const na = parseInt(a.replace('verse_', ''));
+      const nb = parseInt(b.replace('verse_', ''));
+      return na - nb;
+    })
     .map(k => surah.verse[k]);
 
   versesArray.forEach((text, i) => {
     const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
 
-    // جلب التفسير المحلي لكل آية
+    // ترجمة
+    const translation = translationData.translations[i]?.text || '';
+
+    // التفسير من الملف المحلي ar_muyassar.json
     const tafsirObj = tafsirData.find(t => t.sura === Number(surah.index) && t.aya === i + 1);
-    const tafsir = tafsirObj ? tafsirObj.text : '';
+    let tafsir = tafsirObj ? tafsirObj.text : '';
+
+    // إزالة البسملة في السور ما عدا الفاتحة
+    if (Number(surah.index) !== 1 && tafsir.startsWith('بسم الله')) {
+      tafsir = tafsir.replace(/^بسم الله[^\n]*\n?/, '').trim();
+    }
 
     const el = document.createElement('div');
     el.className = 'verse';
     el.innerHTML = `
       <div class="arab">${text}</div>
       <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
-      <div class="tafsir" style="display:none;">${tafsir}</div>
+      <div class="translation">${translation}</div>
+      <div class="tafsir">${tafsir}</div>
     `;
 
-    // toggle التفسير عند الضغط
+    // عند الضغط على الآية: إظهار/إخفاء التفسير
     el.addEventListener('click', () => {
       const tafsirEl = el.querySelector('.tafsir');
       if (!tafsirEl) return;
-      tafsirEl.style.display = tafsirEl.style.display === 'block' ? 'none' : 'block';
+      tafsirEl.classList.toggle('show');
     });
 
     versesWrap.appendChild(el);
   });
 }
-
 /* ---------- Audio ---------- */
 function populateReciterPlayer(surah) {
   playerWrap.innerHTML = `
