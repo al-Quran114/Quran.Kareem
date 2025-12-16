@@ -367,62 +367,52 @@
 
 <script>
 /* ============================
-   JavaScript — نسخة معدلة
-   ============================ */
+   JavaScript — نسخة مستقرة
+   ============================ */
 
 /* ---------- BASE PATH (GitHub Pages safe) ---------- */
 const BASE_PATH = location.pathname.includes('/Quran.Kareem/')
-  ? '/Quran.Kareem/'
-  : '/';
+  ? '/Quran.Kareem/'
+  : '/';
 
-/* ---------- Config: Reciters (multiple patterns per reciter) ---------- */
-// تم الإبقاء على روابط القراء من mp3quran.net لأنها تقدم خيارات أوسع
+/* ---------- Config: reciters patterns (multiple patterns per reciter) ---------- */
 const RECITERS = {
-  "مشاري العفاسي": [
-    "https://server11.mp3quran.net/afs/{c}.mp3",
-    "https://server8.mp3quran.net/afs/{c}.mp3"
-  ],
-    "محمد محمود الطبلاوي": [
-    "https://server12.mp3quran.net/tblawi/{c}.mp3"
-  ],
-  "محمد صديق المنشاوي": [
-    "https://server10.mp3quran.net/minsh/{c}.mp3",
-    "https://server9.mp3quran.net/minsh/{c}.mp3",
-    "https://server8.mp3quran.net/minsh/{c}.mp3" // تم تصحيح خطأ إملائي
-  ],
-  "محمود خليل الحصري": [
-    "https://server13.mp3quran.net/husr/{c}.mp3",
-    "https://server12.mp3quran.net/husary/{c}.mp3"
-  ],
-  "عبد الباسط عبد الصمد": [
-    "https://server7.mp3quran.net/basit/{c}.mp3",
-    "https://server12.mp3quran.net/basit/{c}.mp3"
-  ],
-  "سعد الغامدي": [
-    "https://server7.mp3quran.net/s_gmd/{c}.mp3",
-    "https://server11.mp3quran.net/s_gmd/{c}.mp3"
-  ],
-  "ماهر المعيقلي": [
-    "https://server12.mp3quran.net/maher/{c}.mp3",
-    "https://server11.mp3quran.net/maher/{c}.mp3"
-  ],
-  "ياسر الدوسري": [
-    "https://server11.mp3quran.net/yasser/{c}.mp3",
-    "https://server8.mp3quran.net/yasser/{c}.mp3"
-  ],
-  "إدريس أبكر": [
-    "https://server6.mp3quran.net/abkr/{c}.mp3"
-  ]
+  "مشاري العفاسي": [
+    "https://server11.mp3quran.net/afs/{c}.mp3",
+    "https://server8.mp3quran.net/afs/{c}.mp3"
+  ],
+    "محمد محمود الطبلاوي": [
+    "https://server12.mp3quran.net/tblawi/{c}.mp3"
+  ],
+  "محمد صديق المنشاوي": [
+    "https://server10.mp3quran.net/minsh/{c}.mp3",
+    "https://server9.mp3quran.net/minsh/{c}.mp3",
+    "https://server8.mp3quran.net/minsh//{c}.mp3"
+  ],
+  "محمود خليل الحصري": [
+    "https://server13.mp3quran.net/husr/{c}.mp3",
+    "https://server12.mp3quran.net/husary/{c}.mp3"
+  ],
+  "عبد الباسط عبد الصمد": [
+    "https://server7.mp3quran.net/basit/{c}.mp3",
+    "https://server12.mp3quran.net/basit/{c}.mp3"
+  ],
+  "سعد الغامدي": [
+    "https://server7.mp3quran.net/s_gmd/{c}.mp3",
+    "https://server11.mp3quran.net/s_gmd/{c}.mp3"
+  ],
+  "ماهر المعيقلي": [
+    "https://server12.mp3quran.net/maher/{c}.mp3",
+    "https://server11.mp3quran.net/maher/{c}.mp3"
+  ],
+  "ياسر الدوسري": [
+    "https://server11.mp3quran.net/yasser/{c}.mp3",
+    "https://server8.mp3quran.net/yasser/{c}.mp3"
+  ],
+  "إدريس أبكر": [
+    "https://server6.mp3quran.net/abkr/{c}.mp3"
+  ]
 };
-
-// **معرفات APIquran لـ الترجمة والتفسير (يمكن تغييرها):**
-// 131: Sahih International (ترجمة) - مثال
-// 169: تفسير ابن كثير - مثال
-const TRANSLATION_ID = 131;
-const TAFSIR_ID = 169;
-// يمكنك جلب قائمة بجميع المعرفات من API نفسها:
-// https://api.quran.com/api/v4/resources/translations
-// https://api.quran.com/api/v4/resources/tafsirs
 
 /* ---------- DOM ---------- */
 const sidebar = document.getElementById('sidebar');
@@ -430,11 +420,11 @@ const chaptersList = document.getElementById('chaptersList');
 const versesWrap = document.getElementById('versesWrap');
 const surahTitle = document.getElementById('surahTitle');
 const surahMeta = document.getElementById('surahMeta');
-const reciterSelect = document.getElementById('reciterSelect'); // لم يعد مستخدماً في هذا الكود
-const translationSelect = document.getElementById('translationSelect'); // لم يعد مستخدماً في هذا الكود
-const tafsirSelect = document.getElementById('tafsirSelect'); // لم يعد مستخدماً في هذا الكود
+const reciterSelect = document.getElementById('reciterSelect');
+const translationSelect = document.getElementById('translationSelect');
+const tafsirSelect = document.getElementById('tafsirSelect');
 const playerWrap = document.getElementById('playerWrap');
-const playSurahBtn = document.getElementById('playSurahBtn'); // لم يعد مستخدماً في هذا الكود
+const playSurahBtn = document.getElementById('playSurahBtn');
 const topSearch = document.getElementById('topSearch');
 const sideSearch = document.getElementById('sideSearch');
 const scrollToLastBtn = document.getElementById('scrollToLast');
@@ -442,189 +432,148 @@ const scrollToLastBtn = document.getElementById('scrollToLast');
 /* ---------- State ---------- */
 let quran = [];
 let currentSurah = null;
-let currentSurahIndex = null;
-let audioUrlsTried = []; // غير مستخدمة حالياً
-let lastAudioTryIndex = 0; // غير مستخدمة حالياً
+let audioUrlsTried = [];
+let lastAudioTryIndex = 0;
 
 /* ---------- Utils ---------- */
 function normalizeArabic(text=''){
-  return text
-    .replace(/[\u064B-\u065F]/g,'') // إزالة التشكيل
-    .replace(/[إأآ]/g,'ا')   // توحيد الهمزات على الألف
-    .replace(/ؤ/g,'و').replace(/ئ/g,'ي') // توحيد الهمزات على الواو والياء
-    .replace(/ى/g,'ي').replace(/ة/g,'ه') // توحيد الألف المقصورة والتاء المربوطة
-    .toLowerCase();
+  return text
+    .replace(/[\u064B-\u065F]/g,'')
+    .replace(/[إأآا]/g,'ا')
+    .replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+    .replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .toLowerCase();
 }
 
 /* ---------- Load Quran (LOCAL) ---------- */
 async function loadQuran(){
-  try{
-    const res = await fetch(`${BASE_PATH}source/surah.json`);
-    quran = await res.json();
-    renderChapters();
-    // محاولة فتح آخر سورة
-    const last = JSON.parse(localStorage.getItem('q_last_v3') || 'null');
-    if (last?.surah) openSurah(last.surah);
-  }catch(e){
-    console.error(e);
-    alert('فشل تحميل surah.json');
-  }
+  try{
+    const res = await fetch(`${BASE_PATH}source/surah.json`);
+    quran = await res.json();
+    renderChapters();
+  }catch(e){
+    console.error(e);
+    alert('فشل تحميل surah.json');
+  }
 }
-
 /* ---------- Render chapters ---------- */
 function renderChapters(filter=''){
-  chaptersList.innerHTML = '';
-  const q = normalizeArabic(filter);
+  chaptersList.innerHTML = '';
+  const q = normalizeArabic(filter);
 
-  quran.forEach(s=>{
-    // بحث بالاسم العربي أو الرقم
-    if(q && !normalizeArabic(s.titleAr).includes(q) && s.index !== q) return;
+  quran.forEach(s=>{
+    if(q && !normalizeArabic(s.titleAr).includes(q) && s.index !== q) return;
 
-    const el = document.createElement('div');
-    el.className = 'chapter-item';
-    // تم إضافة فئة 'active' لتحديد السورة المفتوحة
-    if (Number(s.index) === currentSurahIndex) el.classList.add('active');
+    const el = document.createElement('div');
+    el.className = 'chapter-item';
+    el.innerHTML = `
+      <div>
+        <strong>${parseInt(s.index)}. ${s.titleAr}</strong>
+        <div class="chapter-meta">
+          ${s.count} آية • ${s.type}
+        </div>
+      </div>
+      <div>▶</div>
+    `;
 
-    el.innerHTML = `
-      <div>
-        <strong>${parseInt(s.index)}. ${s.titleAr}</strong>
-        <div class="chapter-meta">
-          ${s.count} آية • ${s.type}
-        </div>
-      </div>
-      <div>▶</div>
-    `;
-
-    el.onclick = () => openSurah(s.index);
-    chaptersList.appendChild(el);
-  });
+    el.onclick = () => openSurah(s.index);
+    chaptersList.appendChild(el);
+  });
 }
 
-/* ---------- Open surah (Combined data fetching) ---------- */
+/* ---------- Open surah ---------- */
 async function openSurah(index) {
-  try {
-    const cleanIndex = Number(index);
-    currentSurahIndex = cleanIndex; // تحديث حالة السورة الحالية
-    versesWrap.innerHTML = '<p class="loading-msg">جارٍ تحميل السورة...</p>'; // رسالة تحميل
+  try {
+    const cleanIndex = Number(index);
 
-    // جلب جميع البيانات بالتوازي
-    const [surahRes, translationRes, tafsirRes] = await Promise.all([
-      fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`), // السورة المحلية
-      fetch(`https://api.quran.com/api/v4/quran/translations/${TRANSLATION_ID}?chapter_number=${cleanIndex}`), // ترجمة
-      fetch(`https://api.quran.com/api/v4/quran/tafsirs/${TAFSIR_ID}?chapter_number=${cleanIndex}`) // تفسير
-    ]);
+    // جلب السورة من API
+    const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
+    const s = await res.json();
 
-    const s = await surahRes.json();
-    const translationData = await translationRes.json();
-    const tafsirData = await tafsirRes.json();
+    s.index = cleanIndex;
 
-    s.index = cleanIndex;
-    currentSurah = s; // حفظ السورة الحالية
+    // جلب البيانات الإضافية مثل التفسير والترجمة من API
+    const translationRes = await fetch(`https://api.quran.com/api/v4/quran/translations/131?chapter_number=${cleanIndex}`);  // ترجمة (Sahih International)
+    const tafsirRes = await fetch(`https://api.quran.com/api/v4/quran/tafsirs/169?chapter_number=${cleanIndex}`);  // تفسير (ابن كثير)
 
-    // جلب المعلومات عن السورة من ملف JSON المحلي (metadata)
-    const meta = quran.find(q => Number(q.index) === cleanIndex);
+    const translationData = await translationRes.json();
+    const tafsirData = await tafsirRes.json();
 
-    surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
-    surahMeta.textContent = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
+    // جلب المعلومات عن السورة من ملف JSON المحلي
+    const meta = quran.find(q => Number(q.index) === cleanIndex);
 
-    // عرض الآيات والترجمة والتفسير
-    renderVerses(s, translationData, tafsirData);
-    // عرض مشغل الصوت
-    populateReciterPlayer(s);
-    // تحديث قائمة السور
-    renderChapters(topSearch.value || sideSearch.value || '');
+    surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
+    surahMeta.textContent = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
-    localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
-  } catch (e) {
-    console.error(e);
-    versesWrap.innerHTML = `<p class="error-msg">تعذر تحميل السورة رقم ${index} أو بياناتها الإضافية.</p>`;
-    alert(`تعذر تحميل السورة رقم ${index}`);
-  }
+    renderVerses(s, translationData, tafsirData);
+
+    localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
+  } catch (e) {
+    console.error(e);
+    alert(`تعذر تحميل السورة رقم ${index}`);
+  }
 }
-  
+  
 /* ---------- Render verses ---------- */
 function renderVerses(surah, translationData, tafsirData) {
-  versesWrap.innerHTML = '';
+  versesWrap.innerHTML = '';
 
-  const isFatiha = Number(surah.index) === 1;
+  const isFatiha = Number(surah.index) === 1;
 
-  if (!surah.verse) {
-    versesWrap.innerHTML = '<p>لا توجد آيات</p>';
-    return;
-  }
+  if (!surah.verse) {
+    versesWrap.innerHTML = '<p>لا توجد آيات</p>';
+    return;
+  }
 
-  // تحويل الآيات إلى مصفوفة مرتبة
-  const versesArray = Object.keys(surah.verse)
-    .sort((a, b) => {
-      const na = parseInt(a.replace('verse_', ''));
-      const nb = parseInt(b.replace('verse_', ''));
-      return na - nb;
-    })
-    .map(k => surah.verse[k]);
+  const versesArray = Object.keys(surah.verse)
+    .sort((a, b) => {
+      const na = parseInt(a.replace('verse_', ''));
+      const nb = parseInt(b.replace('verse_', ''));
+      return na - nb;
+    })
+    .map(k => surah.verse[k]);
 
-  // التكرار على الآيات ودمج البيانات
-  versesArray.forEach((text, i) => {
-    // الآية رقم 1 في كل سورة (باستثناء الفاتحة) هي البسملة
-    const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
-    
-    // الحصول على الترجمة والتفسير المقابل (الـ API تبدأ من صفر)
-    const translation = translationData.translations[i]?.text || 'لا تتوفر ترجمة';
-    const tafsir = tafsirData.tafsirs[i]?.text || 'لا يتوفر تفسير';
+  versesArray.forEach((text, i) => {
+    const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
 
-    const el = document.createElement('div');
-    el.className = 'verse';
-    el.innerHTML = `
-      <div class="arab">${text}</div>
-      <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
-      <div class="translation-section">
-        <strong>الترجمة (Sahih International):</strong>
-        <div class="translation">${translation}</div>
-      </div>
-      <div class="tafsir-section">
-        <strong>التفسير (ابن كثير):</strong>
-        <div class="tafsir">${tafsir}</div>
-      </div>
-    `;
-    versesWrap.appendChild(el);
-  });
+    const translation = translationData.translations[i]?.text || '';
+    const tafsir = tafsirData.tafsirs[i]?.text || '';
+
+    const el = document.createElement('div');
+    el.className = 'verse';
+    el.innerHTML = `
+      <div class="arab">${text}</div>
+      <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
+      <div class="translation">${translation}</div>
+      <div class="tafsir">${tafsir}</div>
+    `;
+    versesWrap.appendChild(el);
+  });
 }
 
-/* ---------- Audio (Uses original mp3quran.net list) ---------- */
+/* ---------- Audio ---------- */
 function populateReciterPlayer(surah) {
-  // إعداد مشغل الصوت مع قائمة القراء المتاحة محلياً
-  playerWrap.innerHTML = `
-    <strong>القاريء:</strong>
-    <select id="playerReciterSelect" class="reciter-select">
-      ${Object.keys(RECITERS).map(r => `<option>${r}</option>`).join('')}
-    </select>
-    <audio id="surahAudio" controls></audio>`;
-  
-  document.getElementById('playerReciterSelect')
-    .addEventListener('change', () => initAudioForSurah(surah));
-  
-  initAudioForSurah(surah);
+  playerWrap.innerHTML = `
+    <select id="playerReciterSelect">
+      ${Object.keys(RECITERS).map(r => `<option>${r}</option>`).join('')}
+    </select>
+    <audio id="surahAudio" controls></audio>`;
+  
+  document.getElementById('playerReciterSelect')
+    .addEventListener('change', () => initAudioForSurah(surah));
+  
+  initAudioForSurah(surah);
 }
 
 function initAudioForSurah(surah) {
-  const reciterName = document.getElementById('playerReciterSelect').value;
-  const audio = document.getElementById('surahAudio');
-  // يتم تحويل رقم السورة إلى صيغة ثلاثة أرقام (مثال: 1 تصبح 001)
-  const c = String(surah.index).padStart(3, '0');
-  const reciterUrls = RECITERS[reciterName];
+  const reciter = document.getElementById('playerReciterSelect').value;
+  const audio = document.getElementById('surahAudio');
+  const c = String(surah.index).padStart(3, '0');
 
-  if (!reciterUrls || reciterUrls.length === 0) {
-    audio.src = '';
-    audio.load();
-    console.error(`لا توجد مسارات صوتية للقارئ ${reciterName}`);
-    return;
-  }
-
-  // استخدام المسار الأول كافتراضي.
-  const audioUrl = reciterUrls[0].replace('{c}', c);
-  
-  audio.src = audioUrl;
-  audio.load();
-  // يمكنك إضافة منطق لمحاولة المسارات الأخرى إذا فشل التحميل
+  // استخدام الصوت من API بدلاً من ملفات محلية
+  const audioUrl = `https://api.quran.com/api/v4/chapter_recitations/7/${c}`;
+  audio.src = audioUrl;
+  audio.load();
 }
 
 /* ---------- Search ---------- */
@@ -633,15 +582,19 @@ sideSearch?.addEventListener('input',e=>renderChapters(e.target.value));
 
 /* ---------- Scroll to last ---------- */
 scrollToLastBtn.addEventListener('click',()=>{
-  const last=JSON.parse(localStorage.getItem('q_last_v3')||'null');
-  if(!last?.surah) return;
-  openSurah(last.surah);
+  const last=JSON.parse(localStorage.getItem('q_last_v3')||'null');
+  if(!last?.surah) return;
+  openSurah(last.surah);
 });
 
 /* ---------- Init ---------- */
 function init(){
-  // لم يعد هناك حاجة لملء قائمة القراء في القائمة الجانبية إذا كانت غير مستخدمة
-  loadQuran();
+  Object.keys(RECITERS).forEach(r=>{
+    const o=document.createElement('option');
+    o.value=o.textContent=r;
+    reciterSelect.appendChild(o);
+  });
+  loadQuran();
 }
 init();
 </script>
