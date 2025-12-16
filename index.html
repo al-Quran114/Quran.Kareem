@@ -288,6 +288,19 @@
   select,input{background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:10px}
   small.muted{color:var(--muted);font-size:12px}
   footer{margin-top:30px;color:var(--muted);text-align:center;font-size:13px}
+  
+  .tafsir {
+  display: none;
+  margin-top: 8px;
+  padding: 10px;
+  background: #f7f7f7;
+  border-right: 4px solid #0d472c;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.verse {
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -547,6 +560,15 @@ function renderVerses(surah, translationData, tafsirData) {
       <div class="translation">${translation}</div>
       <div class="tafsir">${tafsir}</div>
     `;
+    
+el.addEventListener('click', () => {
+  const tafsirEl = el.querySelector('.tafsir');
+  if (!tafsirEl) return;
+
+  tafsirEl.style.display =
+    tafsirEl.style.display === 'block' ? 'none' : 'block';
+});
+
     versesWrap.appendChild(el);
   });
 }
