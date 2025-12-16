@@ -369,7 +369,7 @@ html .verse .tafsir {
               <option value="">بدون ترجمة</option>
             </select>
             <select id="tafsirSelect" title="التفسير">
-              <option value="">بدون تفسير</option>
+              <option value="no_tafsir">بدون تفسير</option>
               <option value="muyassar">بتفسير</option>
             </select>
             <button id="playSurahBtn" class="btn">▶ تشغيل السورة</button>
@@ -505,7 +505,8 @@ function renderChapters(filter=''){
   });
 }
 /* ---------- Open surah ---------- */
-async function openSurah(index) {
+async function openSurah(index, tafsirOption = 'no_tafsir') {
+  const tafsirSelect = document.getElementById('tafsirSelect');
   try {
     const cleanIndex = parseInt(index, 10);
 
@@ -534,7 +535,7 @@ async function openSurah(index) {
 }
 
 /* ---------- Render verses ---------- */
-function renderVerses(surah, translationData, tafsirData) {
+function renderVerses(surah, translationData, tafsirData = null) {
   versesWrap.innerHTML = '';
 
   const isFatiha = Number(surah.index) === 1;
@@ -590,6 +591,22 @@ function renderVerses(surah, translationData, tafsirData) {
 
     versesWrap.appendChild(el);
   });
+}
+
+function getCurrentSurahIndex() {
+    const lastSurah = JSON.parse(localStorage.getItem('q_last_v3'));
+    return lastSurah ? lastSurah.surah : 1;
+}
+
+if (tafsirSelect) {
+    tafsirSelect.addEventListener('change', (event) => {
+        const selectedTafsir = event.target.value;
+        const currentSurah = getCurrentSurahIndex(); 
+
+        const tafsirOption = selectedTafsir === 'muyassar' ? 'muyassar' : 'no_tafsir';
+        
+        openSurah(currentSurah, tafsirOption);
+    });
 }
 /* ---------- Audio ---------- */
 function populateReciterPlayer(surah) {
