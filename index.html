@@ -499,18 +499,14 @@ async function openSurah(index) {
   try {
     const cleanIndex = Number(index);
 
-    // جلب السورة من API
+    // جلب السورة من الملف المحلي
     const res = await fetch(`${BASE_PATH}source/surah/surah_${cleanIndex}.json`);
     const s = await res.json();
 
     s.index = cleanIndex;
 
-    // جلب البيانات الإضافية مثل التفسير والترجمة من API
-    const translationRes = await fetch(`https://api.quran.com/api/v4/quran/translations/131?chapter_number=${cleanIndex}`);  // ترجمة (Sahih International)
-    const tafsirRes = await fetch(`https://api.quran.com/api/v4/quran/tafsirs/169?chapter_number=${cleanIndex}`);  // تفسير (ابن كثير)
-
-    const translationData = await translationRes.json();
-    const tafsirData = await tafsirRes.json();
+    // جلب التفسير المحلي من ar_muyassar.json
+    const tafsirData = await fetch(`${BASE_PATH}source/ar_muyassar.json`).then(r => r.json());
 
     // جلب المعلومات عن السورة من ملف JSON المحلي
     const meta = quran.find(q => Number(q.index) === cleanIndex);
@@ -518,7 +514,7 @@ async function openSurah(index) {
     surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
     surahMeta.textContent = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
-    renderVerses(s, translationData, tafsirData);
+    renderVerses(s, tafsirData);
 
     localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
   } catch (e) {
@@ -526,9 +522,9 @@ async function openSurah(index) {
     alert(`تعذر تحميل السورة رقم ${index}`);
   }
 }
-  
+
 /* ---------- Render verses ---------- */
-function renderVerses(surah, translationData, tafsirData) {
+function renderVerses(surah, tafsirData) {
   versesWrap.innerHTML = '';
 
   const isFatiha = Number(surah.index) === 1;
@@ -539,35 +535,30 @@ function renderVerses(surah, translationData, tafsirData) {
   }
 
   const versesArray = Object.keys(surah.verse)
-    .sort((a, b) => {
-      const na = parseInt(a.replace('verse_', ''));
-      const nb = parseInt(b.replace('verse_', ''));
-      return na - nb;
-    })
+    .sort((a, b) => parseInt(a.replace('verse_', '')) - parseInt(b.replace('verse_', '')))
     .map(k => surah.verse[k]);
 
   versesArray.forEach((text, i) => {
     const verseNumber = (!isFatiha && i === 0) ? null : (isFatiha ? i + 1 : i);
 
-    const translation = translationData.translations[i]?.text || '';
-    const tafsir = tafsirData.tafsirs[i]?.text || '';
+    // جلب التفسير المحلي لكل آية
+    const tafsirObj = tafsirData.find(t => t.sura === Number(surah.index) && t.aya === i + 1);
+    const tafsir = tafsirObj ? tafsirObj.text : '';
 
     const el = document.createElement('div');
     el.className = 'verse';
     el.innerHTML = `
       <div class="arab">${text}</div>
       <span class="verse-number">${verseNumber !== null ? `﴿${verseNumber}﴾` : ''}</span>
-      <div class="translation">${translation}</div>
-      <div class="tafsir">${tafsir}</div>
+      <div class="tafsir" style="display:none;">${tafsir}</div>
     `;
-    
-el.addEventListener('click', () => {
-  const tafsirEl = el.querySelector('.tafsir');
-  if (!tafsirEl) return;
 
-  tafsirEl.style.display =
-    tafsirEl.style.display === 'block' ? 'none' : 'block';
-});
+    // toggle التفسير عند الضغط
+    el.addEventListener('click', () => {
+      const tafsirEl = el.querySelector('.tafsir');
+      if (!tafsirEl) return;
+      tafsirEl.style.display = tafsirEl.style.display === 'block' ? 'none' : 'block';
+    });
 
     versesWrap.appendChild(el);
   });
