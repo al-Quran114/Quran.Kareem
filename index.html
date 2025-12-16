@@ -504,13 +504,8 @@ function renderChapters(filter=''){
     chaptersList.appendChild(el);
   });
 }
-  
-// **1. تعريف مرجع لعنصر الـ Select (إضافة جديدة)**
-const tafsirSelect = document.getElementById('tafsirSelect');
-
 /* ---------- Open surah ---------- */
-// **تعديل: إضافة معامل اختياري (tafsirOption) لتحديد خيار التفسير الحالي**
-async function openSurah(index, tafsirOption = 'no_tafsir') {
+async function openSurah(index) {
   try {
     const cleanIndex = parseInt(index, 10);
 
@@ -519,13 +514,8 @@ async function openSurah(index, tafsirOption = 'no_tafsir') {
 
     s.index = cleanIndex;
 
-    // **التعديل الجوهري: جلب ملف التفسير بشكل مشروط**
-    let tafsirData = null;
-    if (tafsirOption === 'muyassar') {
-      const tafsirRes = await fetch(`${BASE_PATH}source/ar_muyassar.json`);
-      tafsirData = await tafsirRes.json();
-    }
-    // نهاية التعديل الجوهري
+    const tafsirData = await fetch(`${BASE_PATH}source/ar_muyassar.json`)
+      .then(r => r.json());
 
     const translationData = { translations: [] };
 
@@ -534,10 +524,9 @@ async function openSurah(index, tafsirOption = 'no_tafsir') {
     surahTitle.textContent = `${cleanIndex} — ${meta?.titleAr || s.name}`;
     surahMeta.textContent  = `${meta?.count || s.count} آية • ${meta?.type || ''}`;
 
-    // تمرير بيانات التفسير (قد تكون null)
     renderVerses(s, translationData, tafsirData);
 
-    localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex, tafsir: tafsirOption }));
+    localStorage.setItem('q_last_v3', JSON.stringify({ surah: cleanIndex }));
   } catch (e) {
     console.error(e);
     alert(`تعذر تحميل السورة رقم ${index}`);
@@ -545,8 +534,7 @@ async function openSurah(index, tafsirOption = 'no_tafsir') {
 }
 
 /* ---------- Render verses ---------- */
-// **تعديل: جعل tafsirData معاملًا اختياريًا وقد يكون null**
-function renderVerses(surah, translationData, tafsirData = null) {
+function renderVerses(surah, translationData, tafsirData) {
   versesWrap.innerHTML = '';
 
   const isFatiha = Number(surah.index) === 1;
@@ -571,21 +559,16 @@ function renderVerses(surah, translationData, tafsirData = null) {
 
     const translation = translationData.translations?.[i]?.text || '';
 
-    let tafsir = '';
-    // **التعديل: استخراج التفسير فقط إذا كانت بيانات التفسير (tafsirData) متوفرة**
-    if (tafsirData) {
-        const ayaNumber = isFatiha ? i + 1 : i;
-        const tafsirObj = tafsirData.find(
-          t => t.sura === Number(surah.index) && t.aya === ayaNumber
-        );
+    const ayaNumber = isFatiha ? i + 1 : i;
+    const tafsirObj = tafsirData.find(
+      t => t.sura === Number(surah.index) && t.aya === ayaNumber
+    );
 
-        tafsir = tafsirObj ? tafsirObj.text : '';
+    let tafsir = tafsirObj ? tafsirObj.text : '';
 
-        if (!isFatiha && i === 0) {
-          tafsir = '';
-        }
+    if (!isFatiha && i === 0) {
+      tafsir = '';
     }
-    // نهاية التعديل
 
     const el = document.createElement('div');
     el.className = 'verse';
@@ -599,40 +582,14 @@ function renderVerses(surah, translationData, tafsirData = null) {
       <div class="tafsir">${tafsir}</div>
     `;
 
-    // **التعديل: لا تضيف معالج حدث النقر إذا لم يكن هناك تفسير**
-    if (tafsir) {
-        el.addEventListener('click', () => {
-          const tafsirEl = el.querySelector('.tafsir');
-          if (!tafsirEl) return; // تحقق إضافي
-          tafsirEl.classList.toggle('show');
-        });
-    }
-    // نهاية التعديل
+    el.addEventListener('click', () => {
+      const tafsirEl = el.querySelector('.tafsir');
+      if (!tafsirEl || !tafsir) return;
+      tafsirEl.classList.toggle('show');
+    });
 
     versesWrap.appendChild(el);
   });
-}
-
-// **2. إضافة معالج حدث لتغيير خيار التفسير (إضافة جديدة)**
-
-// دالة مساعدة لتحديد السورة الحالية (تحتاج لتعديل حسب طريقة تخزينك للسورة الحالية)
-function getCurrentSurahIndex() {
-    // افترض أن لديك آلية لتخزين وتحديد السورة المفتوحة حالياً
-    // مثال: القراءة من localStorage إذا تم استخدامها
-    const lastSurah = JSON.parse(localStorage.getItem('q_last_v3'));
-    return lastSurah ? lastSurah.surah : 1; // ترجع 1 افتراضيًا أو حسب سورتك الافتراضية
-}
-
-if (tafsirSelect) {
-    tafsirSelect.addEventListener('change', (event) => {
-        const selectedTafsir = event.target.value; // 'muyassar' أو ''
-        const currentSurah = getCurrentSurahIndex(); // تحتاج لتحديد السورة المفتوحة حالياً
-
-        // استدعاء openSurah مرة أخرى لتحديث عرض السورة مع الخيار الجديد
-        // نمرر 'muyassar' إذا كانت القيمة هي 'muyassar'، وإلا نمرر أي قيمة أخرى (مثل 'no_tafsir')
-        const tafsirOption = selectedTafsir === 'muyassar' ? 'muyassar' : 'no_tafsir';
-        openSurah(currentSurah, tafsirOption);
-    });
 }
 /* ---------- Audio ---------- */
 function populateReciterPlayer(surah) {
