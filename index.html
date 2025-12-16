@@ -535,7 +535,7 @@ async function openSurah(index, tafsirOption = 'no_tafsir') {
 }
 
 /* ---------- Render verses ---------- */
-function renderVerses(surah, translationData, tafsirData = null) {
+function renderVerses(surah, translationData, tafsirData = null, tafsirOption = 'no_tafsir') {
   versesWrap.innerHTML = '';
 
   const isFatiha = Number(surah.index) === 1;
@@ -552,7 +552,9 @@ function renderVerses(surah, translationData, tafsirData = null) {
       return na - nb;
     })
     .map(k => surah.verse[k]);
-
+  
+      const shouldShowTafsir = tafsirOption === 'muyassar';
+  
   versesArray.forEach((text, i) => {
 
     const verseNumber =
@@ -573,7 +575,9 @@ function renderVerses(surah, translationData, tafsirData = null) {
 
     const el = document.createElement('div');
     el.className = 'verse';
-
+if (shouldShowTafsir) {
+        el.classList.add('show-tafsir');
+}
     el.innerHTML = `
       <div class="arab">${text}</div>
       <span class="verse-number">
@@ -583,10 +587,10 @@ function renderVerses(surah, translationData, tafsirData = null) {
       <div class="tafsir">${tafsir}</div>
     `;
 
-    el.addEventListener('click', () => {
+     el.addEventListener('click', () => {
       const tafsirEl = el.querySelector('.tafsir');
       if (!tafsirEl || !tafsir) return;
-      tafsirEl.classList.toggle('show');
+      el.classList.toggle('show-tafsir'); 
     });
 
     versesWrap.appendChild(el);
